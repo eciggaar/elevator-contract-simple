@@ -39,24 +39,28 @@ import (
 type SimpleChaincode struct {
 }
 
+// CONTRACTSTATEKEY  - Store contract state key
 const CONTRACTSTATEKEY string = "ContractStateKey"
 
-// store contract state - only version in this example
+// MYVERSION Store contract state. Only version in this example
 const MYVERSION string = "1.0"
 
 // ************************************
 // asset and contract state
 // ************************************
 
+// ContractState - structure to store contract state (version)
 type ContractState struct {
 	Version string `json:"version"`
 }
 
+// System - structure to store device system details
 type System struct {
 	CPU    *float64 `json:"cpu,omitempty"`
 	Memory *float64 `json:"memory,omitempty"`
 }
 
+// AssetState - structure to store asset details
 type AssetState struct {
 	AssetID     *string  `json:"assetID,omitempty"`     // all assets must have an ID, primary key of contract
 	Weight      *float64 `json:"weight,omitempty"`      // asset weight
@@ -68,9 +72,7 @@ type AssetState struct {
 
 var contractState = ContractState{MYVERSION}
 
-// ************************************
-// deploy callback mode
-// ************************************
+// Init - contract initialization
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	var stateArg ContractState
 	var err error
@@ -95,9 +97,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
-// ************************************
-// deploy and invoke callback mode
-// ************************************
+// Invoke - implementation of invoke method
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	// Handle different functions
 	if function == "createAsset" {
@@ -113,9 +113,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	return nil, errors.New("Received unknown invocation: " + function)
 }
 
-// ************************************
-// query callback mode
-// ************************************
+// Query - implementation of query method
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	// Handle different functions
 	if function == "readAsset" {
@@ -214,7 +212,7 @@ func (t *SimpleChaincode) readAsset(stub shim.ChaincodeStubInterface, args []str
 //*************readAssetObjectModel*****************/
 
 func (t *SimpleChaincode) readAssetObjectModel(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	var state AssetState = AssetState{}
+	var state = AssetState{}
 
 	// Marshal and return
 	stateJSON, err := json.Marshal(state)
@@ -240,8 +238,8 @@ func (t *SimpleChaincode) readAssetSchemas(stub shim.ChaincodeStubInterface, arg
 // validate input data : common method called by the CRUD functions
 // ************************************
 func (t *SimpleChaincode) validateInput(args []string) (stateIn AssetState, err error) {
-	var assetID string                  // asset ID
-	var state AssetState = AssetState{} // The calling function is expecting an object of type AssetState
+	var assetID string       // asset ID
+	var state = AssetState{} // The calling function is expecting an object of type AssetState
 
 	if len(args) != 1 {
 		err = errors.New("Incorrect number of arguments. Expecting a JSON strings with mandatory assetID")
